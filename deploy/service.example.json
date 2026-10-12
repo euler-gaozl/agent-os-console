@@ -1,0 +1,16 @@
+{
+  "LISTEN": "127.0.0.1:8090",
+  "SERVICE_TOKEN": "<generated service identity, at least 32 bytes>",
+  "SERVICE_PEERS": "<JSON role to SHA-256 of service token>",
+  "ADMIN_TOKEN": "<separate user access token, at least 32 bytes>",
+  "DEV_LOCAL": "0",
+  "REGISTRY_URL": "http://127.0.0.1:8096",
+  "RUNTIME_URL": "http://127.0.0.1:8094",
+  "KNOWLEDGE_URL": "http://127.0.0.1:8095",
+  "WEB_DIR": "web/dist",
+  "HTTP_MAX_CONCURRENT": "16",
+  "GOMEMLIMIT": "96MiB",
+  "TOOLHUB_URL": "http://127.0.0.1:8091",
+  "STORAGE_URL": "http://127.0.0.1:8092",
+  "SOURCES_URL": "http://127.0.0.1:8101"
+}
