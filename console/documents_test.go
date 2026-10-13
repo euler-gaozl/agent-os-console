@@ -35,6 +35,9 @@ func TestConsoleRoutesNotesToRuntimeAndBytesToStorage(t *testing.T) {
 		{"POST", "/api/notes/retire", `{"request_id":"retry-stable"}`, `runtime POST /v1/notes/retire {"request_id":"retry-stable"}`},
 		{"POST", "/api/documents", `{"content":"same body"}`, `runtime POST /v1/documents {"content":"same body"}`},
 		{"GET", "/api/artifacts/hash", "", "storage GET /artifacts/hash "},
+		{"GET", "/api/runs/run-id/working-state?revision=2", "", "runtime GET /v1/runs/run-id/working-state?revision=2 "},
+		{"GET", "/api/runs/run-id/source-recovery", "", "runtime GET /v1/runs/run-id/source-recovery "},
+		{"POST", "/api/runs/run-id/resume-source-state", "{}", "runtime POST /v1/runs/run-id/resume-source-state {}"},
 	} {
 		w := httptest.NewRecorder()
 		m.ServeHTTP(w, httptest.NewRequest(tc.method, tc.path, strings.NewReader(tc.body)))

@@ -17,3 +17,27 @@ The small CSS/React foundation and bounded HTTP proxy were copied from the recor
 Independent tests use synthetic HTTP peers and do not prove paid provider or deployed-service operation. Current source/build/CI/live validation is recorded separately in the integration P2 ledger. Upgrade and rollback require the same HTTP/data/tool contract and bundle the matching BFF plus Web; there is no DB migration to undo.
 
 Run scripts/Package-Web.ps1 -Destination <new-path> for a complete immutable native BFF/Web package, then scripts/Test-RelocatedPackage.ps1 -Package <path> to move it to a new sibling and exercise the actual executable with synthetic HTTP peers. The original location must be absent. No source, Node compiler or database is required by the package.
+
+## Source-engine run management candidate
+
+Run details recognize `dsh-source-639ed015-state-v1` and read the Runtime-owned
+working-state API. The panel separates current authoritative task/constraints
+from derived questions, observations, plans, third-party forecasts, conflicts
+and next steps. It supports exact historical revisions, stale-constraint
+warnings and retained source receipt hashes/bodies. An empty ledger is shown as
+not yet saved. Classification and retrievability do not imply verified truth.
+
+Source-state recovery uses Runtime's control-only preview and fenced management
+action; the browser does not infer safety from a status string. Unknown external
+calls retain the existing reconciliation form. Source-engine archives are
+labelled as manifests. A failed optional state/preview read is explicit while
+other run details remain available. Mutation replies after closing/switching a
+task cannot reopen the old task. No new database or business-effect code lives
+in Console; the BFF uses its existing authenticated Runtime proxy.
+
+Windows evidence `p25-console-source-aa4e7925d9af46f585b1ecd111476ca5` records Go
+and Web checks plus real-browser testing against the actual candidate BFF and
+synthetic Runtime peers. Desktop and 390px views, historical state, receipt
+expansion, recovery and constraint mutation delayed-reply/close cases passed.
+This is not a deployed service or real-provider E2E result. Full P3 UI acceptance
+and deployment selection remain open; historical engines retain their old view.

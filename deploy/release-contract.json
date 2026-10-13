@@ -19,5 +19,10 @@
       "note_retire"
     ],
     "engines": []
+  },
+  "optional_runtime_capabilities": {
+    "source_engine": "dsh-source-639ed015-state-v1",
+    "working_state_http": "agentos-http-v0.7-source-state-v1",
+    "source_management_preview_protocol": "source-recovery-preview-v1"
   }
 }

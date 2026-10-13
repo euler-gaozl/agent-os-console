@@ -1,0 +1,213 @@
+.working-panel {
+  margin: 24px 0;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.working-panel > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.working-panel h3 {
+  margin: 5px 0 0;
+  font-size: 18px;
+}
+.working-panel h4 {
+  margin: 0 0 14px;
+  font-size: 14px;
+}
+.working-panel h4 small {
+  margin-left: 6px;
+  color: var(--muted);
+  font-weight: 400;
+}
+.working-panel p {
+  line-height: 1.75;
+  margin: 8px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.working-eyebrow {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+.working-history {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 18px;
+}
+.working-history .active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: transparent;
+}
+.working-history form {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+  color: var(--muted);
+}
+.working-history input {
+  width: 92px;
+  padding: 8px;
+}
+.working-authority {
+  padding: 16px 18px;
+  border-left: 3px solid var(--accent);
+  background: var(--canvas);
+  border-radius: 0 7px 7px 0;
+}
+.working-authority ul {
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.working-phase {
+  display: flex;
+  gap: 12px;
+  margin: 22px 0 4px;
+  align-items: baseline;
+  overflow-wrap: anywhere;
+}
+.working-phase span {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.working-phase strong {
+  font-size: 15px;
+}
+.working-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 18px 0;
+}
+.working-grid section,
+.working-conflicts {
+  padding: 16px;
+  background: var(--canvas);
+  border-radius: 9px;
+  min-width: 0;
+}
+.working-grid ul,
+.working-conflicts ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.working-grid li + li,
+.working-conflicts li + li {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.working-tag {
+  display: inline-block;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  border-radius: 5px;
+  padding: 3px 7px;
+  font-size: 11px;
+}
+.working-observations article {
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.working-observations details {
+  margin-top: 10px;
+}
+.working-observations summary {
+  color: var(--accent);
+  font-size: 12px;
+  cursor: pointer;
+}
+.working-receipt {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--canvas);
+}
+.working-receipt code,
+.working-receipt small {
+  display: block;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  line-height: 1.8;
+}
+.working-receipt pre {
+  max-height: 260px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.working-empty {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 22px 0 6px;
+  color: var(--muted);
+}
+.working-empty svg {
+  flex-shrink: 0;
+}
+.working-empty b {
+  color: var(--ink);
+  font-size: 14px;
+}
+.working-empty p {
+  font-size: 13px;
+}
+.working-panel .working-caution {
+  background: #fff5e5;
+  border: 1px solid #ead5b4;
+  color: var(--warning);
+  border-radius: 7px;
+  padding: 12px 14px;
+  font-size: 13px;
+  margin: 14px 0;
+}
+.working-recovery {
+  border-top: 1px solid var(--line);
+  margin-top: 18px;
+  padding-top: 18px;
+}
+.working-recovery p {
+  color: var(--muted);
+  font-size: 13px;
+}
+@media (max-width: 620px) {
+  .working-panel {
+    padding: 15px;
+  }
+  .working-panel > header {
+    align-items: flex-start;
+  }
+  .working-panel > header .button {
+    flex-shrink: 0;
+  }
+  .working-grid {
+    grid-template-columns: 1fr;
+  }
+  .working-history form {
+    margin: 7px 0 0;
+    width: 100%;
+  }
+  .working-authority {
+    padding: 12px;
+  }
+}

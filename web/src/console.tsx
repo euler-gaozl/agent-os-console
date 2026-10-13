@@ -54,8 +54,15 @@ import "./console.css";
 import "./console-layout.css";
 import { ToolGovernance } from "./tool-governance";
 import { Notes } from "./notes";
+import {
+  WorkingStatePanel,
+  SOURCE_ENGINE,
+  hasArchiveManifest,
+} from "./working-state";
+import "./working-state.css";
 
-type Page = "agents" | "tools" | "knowledge" | "notes" | "runs" | "services" | "settings";
+type Page =
+  "agents" | "tools" | "knowledge" | "notes" | "runs" | "services" | "settings";
 const nav = [
   { id: "agents", name: "自定义 Agent", icon: Bot },
   { id: "tools", name: "ToolHub", icon: Box },
@@ -72,7 +79,13 @@ const blankAgent = () => ({
   connectors: [],
   knowledge: [],
   child_agents: [],
-  tools: ["knowledge_search", "note_save", "artifact_read", "document_read", "run_recall"],
+  tools: [
+    "knowledge_search",
+    "note_save",
+    "artifact_read",
+    "document_read",
+    "run_recall",
+  ],
   model: {
     base_url: "https://api.deepseek.com",
     model: "deepseek-flash",
@@ -455,7 +468,8 @@ function Console() {
                       knowledge:
                         "保留原始资料与出处，为 Agent 提供可追溯的检索服务。",
                       runs: "查看执行结果、调用回执和恢复记录。",
-                      notes: "管理 Agent 留存的事实与工作记忆，查阅原文、有效状态和修订历史。",
+                      notes:
+                        "管理 Agent 留存的事实与工作记忆，查阅原文、有效状态和修订历史。",
                       services: "查看各服务实例的心跳，以及执行与索引 Worker。",
                       settings: "统一管理模型访问凭证，Agent 通过名称引用。",
                     }[page]
@@ -2537,12 +2551,12 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
                   onClick={() =>
                     void downloadArtifact(
                       selected.state.harness_artifact,
-                      `dsh-${selected.engine === "dsh-0.2.0-rc.2-evidence-v1" ? "manifest-" : ""}${selected.id}.json`,
+                      `dsh-${hasArchiveManifest(selected.engine) ? "manifest-" : ""}${selected.id}.json`,
                     ).catch((e) => notify(e.message))
                   }
                 >
                   <FileText size={15} />
-                  {selected.engine === "dsh-0.2.0-rc.2-evidence-v1"
+                  {hasArchiveManifest(selected.engine)
                     ? "下载执行记录清单"
                     : "下载完整 DSH 执行记录"}
                 </button>
@@ -2551,7 +2565,7 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
                 <RefreshCw size={15} />
                 更新详情
               </button>
-              {selected.status === "failed" && (
+              {selected.status === "failed" && !selected.cancel_requested && (
                 <button
                   className="button"
                   onClick={() =>
@@ -2581,10 +2595,19 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
                 </button>
               )}
             </div>
-            {selected.engine === "dsh-0.2.0-rc.2-evidence-v1" && (
+            {hasArchiveManifest(selected.engine) && (
               <p className="muted">
                 执行记录按批次保存。下载清单包含当前批次的文件索引、校验值及前序清单入口。
               </p>
+            )}
+            {selected.engine === SOURCE_ENGINE && (
+              <WorkingStatePanel
+                key={`${selected.id}:${selection.current}`}
+                id={selected.id}
+                status={selected.status}
+                calls={calls}
+                refreshRun={() => open(selected.id)}
+              />
             )}
             <details>
               <summary>修订当前任务及未结束子任务的约束</summary>
@@ -2600,69 +2623,75 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
               <button
                 className="button"
                 onClick={() =>
-                  void api("/runs/" + selected.id + "/constraints", {
-                    values: selected.constraints,
+                  void refreshAfter(selected.id, async () => {
+                    await api("/runs/" + selected.id + "/constraints", {
+                      values: selected.constraints,
+                    });
+                    notify("约束版本已更新");
                   })
-                    .then(() => notify("约束版本已更新"))
-                    .catch((e) => notify(e.message))
                 }
               >
                 保存约束
               </button>
             </details>
-            {selected.status === "waiting_unknown" && (
-              <div className="reconcile-form">
-                <h3>核对外部执行结果</h3>
-                <Field label="待核对调用">
-                  <select
-                    value={callID}
-                    onChange={(e) => setCallID(e.target.value)}
+            {selected.status === "waiting_unknown" &&
+              calls.some((c) => ["unknown", "inflight"].includes(c.status)) && (
+                <div className="reconcile-form">
+                  <h3>核对外部执行结果</h3>
+                  <Field label="待核对调用">
+                    <select
+                      value={callID}
+                      onChange={(e) => setCallID(e.target.value)}
+                    >
+                      {calls
+                        .filter((c) =>
+                          ["unknown", "inflight"].includes(c.status),
+                        )
+                        .map((c) => (
+                          <option key={c.id}>{c.id}</option>
+                        ))}
+                    </select>
+                  </Field>
+                  <Field label="结论">
+                    <select
+                      value={decision}
+                      onChange={(e) => setDecision(e.target.value)}
+                    >
+                      <option value="completed">已执行，补录真实结果</option>
+                      <option value="not_executed">
+                        已确认未执行，允许重试
+                      </option>
+                    </select>
+                  </Field>
+                  <Field label="核对依据">
+                    <textarea
+                      value={evidence}
+                      onChange={(e) => setEvidence(e.target.value)}
+                    />
+                  </Field>
+                  <Field label="回执 JSON">
+                    <textarea
+                      value={receipt}
+                      onChange={(e) => setReceipt(e.target.value)}
+                    />
+                  </Field>
+                  <button
+                    className="button primary"
+                    onClick={() =>
+                      void refreshAfter(selected.id, () =>
+                        api("/runs/" + selected.id + "/reconcile", {
+                          call_id: callID,
+                          decision,
+                          evidence,
+                          result: JSON.parse(receipt),
+                        }),
+                      )
+                    }
                   >
-                    {calls
-                      .filter((c) => ["unknown", "inflight"].includes(c.status))
-                      .map((c) => (
-                        <option key={c.id}>{c.id}</option>
-                      ))}
-                  </select>
-                </Field>
-                <Field label="结论">
-                  <select
-                    value={decision}
-                    onChange={(e) => setDecision(e.target.value)}
-                  >
-                    <option value="completed">已执行，补录真实结果</option>
-                    <option value="not_executed">已确认未执行，允许重试</option>
-                  </select>
-                </Field>
-                <Field label="核对依据">
-                  <textarea
-                    value={evidence}
-                    onChange={(e) => setEvidence(e.target.value)}
-                  />
-                </Field>
-                <Field label="回执 JSON">
-                  <textarea
-                    value={receipt}
-                    onChange={(e) => setReceipt(e.target.value)}
-                  />
-                </Field>
-                <button
-                  className="button primary"
-                  onClick={() =>
-                    void refreshAfter(selected.id, () =>
-                      api("/runs/" + selected.id + "/reconcile", {
-                        call_id: callID,
-                        decision,
-                        evidence,
-                        result: JSON.parse(receipt),
-                      }),
-                    )
-                  }
-                >
-                  提交核对记录
-                </button>
-              </div>
-            )}
+                    提交核对记录
+                  </button>
+                </div>
+              )}
             <details>
               <summary>模型与工具回执 · {calls.length}</summary>
               {calls.map((c) => (
