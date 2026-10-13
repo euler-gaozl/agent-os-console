@@ -20,7 +20,8 @@ Run scripts/Package-Web.ps1 -Destination <new-path> for a complete immutable nat
 
 ## Source-engine run management candidate
 
-Run details recognize `dsh-source-639ed015-state-v1` and read the Runtime-owned
+Run details recognize `dsh-source-639ed015-state-v1` and
+`dsh-source-639ed015-resident-v2` and read the Runtime-owned
 working-state API. The panel separates current authoritative task/constraints
 from derived questions, observations, plans, third-party forecasts, conflicts
 and next steps. It supports exact historical revisions, stale-constraint
@@ -34,6 +35,27 @@ labelled as manifests. A failed optional state/preview read is explicit while
 other run details remain available. Mutation replies after closing/switching a
 task cannot reopen the old task. No new database or business-effect code lives
 in Console; the BFF uses its existing authenticated Runtime proxy.
+
+The latest candidate replaces complete `/calls` loading with 25-item summary
+pages and explicit per-field 8,192-character reads. Only the visible history
+page and open text segment are retained. Source receipts are fetched by ID even
+when absent from that page. Pending reconciliation has its own unresolved query;
+opening a specific item reveals its existing server-validated reconciliation
+action. Failed reads and version conflicts stay visible; no fallback fetches
+full history. Closing or changing a reader invalidates its late responses.
+
+This Console requires Runtime `call-receipts-v1`. Upgrade Runtime first and
+roll Console back first. The Windows integrator checks the capability and bound
+local Runtime URL before replacement/startup. Direct manual or Linux deployment
+still needs this compatibility check; the owner declaration alone is not live
+capability discovery. The execution/data protocol and BFF routing are unchanged.
+
+Evidence `receipt-console-1a3f9e8ce0794404971f5d3de4873057` records independent
+Go checks, nine Web tests/build and actual browser interaction with this BFF/Web
+and synthetic Runtime peers. Desktop/390px, 25/25/13 summary pages, independent
+pending item, source lookup, Unicode segments, 409/restart, field changes and
+late read/reconciliation close checks passed. Request logs contain no legacy
+full `/calls` fetch. This is not formal deployment or real-provider evidence.
 
 Windows evidence `p25-console-source-aa4e7925d9af46f585b1ecd111476ca5` records Go
 and Web checks plus real-browser testing against the actual candidate BFF and

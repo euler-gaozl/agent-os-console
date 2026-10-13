@@ -37,6 +37,8 @@ func TestConsoleRoutesNotesToRuntimeAndBytesToStorage(t *testing.T) {
 		{"GET", "/api/artifacts/hash", "", "storage GET /artifacts/hash "},
 		{"GET", "/api/runs/run-id/working-state?revision=2", "", "runtime GET /v1/runs/run-id/working-state?revision=2 "},
 		{"GET", "/api/runs/run-id/source-recovery", "", "runtime GET /v1/runs/run-id/source-recovery "},
+		{"GET", "/api/runs/run-id/calls/page?limit=25&filter=unresolved&after=cursor", "", "runtime GET /v1/runs/run-id/calls/page?limit=25&filter=unresolved&after=cursor "},
+		{"GET", "/api/runs/run-id/calls/record?operation_id=run-id%2Fdsh%2F3&field=response&offset=8192&version=hash", "", "runtime GET /v1/runs/run-id/calls/record?operation_id=run-id%2Fdsh%2F3&field=response&offset=8192&version=hash "},
 		{"POST", "/api/runs/run-id/resume-source-state", "{}", "runtime POST /v1/runs/run-id/resume-source-state {}"},
 	} {
 		w := httptest.NewRecorder()

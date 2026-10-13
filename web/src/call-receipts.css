@@ -1,0 +1,138 @@
+.receipt-panel {
+  margin-block: 24px;
+  padding: 20px;
+  border: 1px solid var(--line, #e6e4ee);
+  border-radius: 16px;
+  background: var(--surface, #fff);
+  min-width: 0;
+}
+.receipt-panel > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.receipt-panel h3,
+.receipt-panel h4 {
+  margin: 0 0 8px;
+}
+.receipt-panel .field-hint {
+  margin: 8px 0;
+}
+.receipt-attention {
+  border-color: #e7cda0;
+  background: #fffcf7;
+}
+.receipt-list {
+  display: grid;
+  gap: 10px;
+}
+.receipt-item {
+  border: 1px solid #e7e6ed;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+.receipt-summary {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  text-align: left;
+  gap: 16px;
+  padding: 14px;
+  color: inherit;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.receipt-summary:hover {
+  background: #f8f7fc;
+}
+.receipt-summary > span {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.receipt-summary code {
+  font-size: 11px;
+  overflow-wrap: anywhere;
+  color: #77728c;
+}
+.receipt-summary strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.receipt-summary small {
+  font-size: 11px;
+  color: #77728c;
+}
+.receipt-detail {
+  padding: 0 14px 14px;
+}
+.receipt-error {
+  color: #965d20;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  padding: 0 14px;
+}
+.receipt-pager,
+.receipt-fields {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 14px;
+}
+.receipt-pager small {
+  color: #77728c;
+  font-size: 12px;
+}
+.receipt-fields .active {
+  background: #eeeafb;
+  color: #6550b8;
+  border-color: #d5cbee;
+}
+.receipt-segment {
+  min-width: 0;
+}
+.receipt-segment pre {
+  max-height: 360px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #f7f7fb;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.receipt-reader {
+  margin-top: 8px;
+  min-width: 0;
+}
+.receipt-reader .button {
+  white-space: normal;
+}
+.receipt-panel .reconcile-form {
+  margin-top: 20px;
+}
+@media (max-width: 600px) {
+  .receipt-panel {
+    padding: 14px;
+  }
+  .receipt-panel > header {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .receipt-summary {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .receipt-summary > span:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+}

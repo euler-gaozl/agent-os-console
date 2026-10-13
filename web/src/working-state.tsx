@@ -7,10 +7,14 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { api, Spinner } from "./shared";
+import { ReceiptReader } from "./call-receipts";
 
 export const SOURCE_ENGINE = "dsh-source-639ed015-state-v1";
+export const RESIDENT_ENGINE = "dsh-source-639ed015-resident-v2";
+export const isSourceEngine = (engine: string) =>
+  engine === SOURCE_ENGINE || engine === RESIDENT_ENGINE;
 export const hasArchiveManifest = (engine: string) =>
-  engine === SOURCE_ENGINE || engine === "dsh-0.2.0-rc.2-evidence-v1";
+  isSourceEngine(engine) || engine === "dsh-0.2.0-rc.2-evidence-v1";
 
 export type WorkingView = {
   run_id: string;
@@ -36,7 +40,6 @@ export type WorkingView = {
   evidence: { operation_id: string; response_sha256: string }[];
 };
 type Recovery = { run_id: string; allowed: boolean; reason: string };
-type Receipt = { id: string; status: string; response?: unknown };
 
 export async function loadWorkingView(
   id: string,
@@ -77,11 +80,9 @@ const recoveryReasons: Record<string, string> = {
 
 export function WorkingStateContent({
   view,
-  calls = [],
   historical = false,
 }: {
   view: WorkingView;
-  calls?: Receipt[];
   historical?: boolean;
 }) {
   const state = view.state;
@@ -188,7 +189,6 @@ export function WorkingStateContent({
                       const evidence = view.evidence.find(
                         (e) => e.operation_id === id,
                       );
-                      const call = calls.find((c) => c.id === id);
                       return (
                         <div className="working-receipt" key={id}>
                           <code>{id}</code>
@@ -197,13 +197,11 @@ export function WorkingStateContent({
                               回执 SHA-256：{evidence.response_sha256}
                             </small>
                           )}
-                          {call ? (
-                            <pre>{JSON.stringify(call.response, null, 2)}</pre>
-                          ) : (
-                            <p className="field-hint">
-                              本次详情未载入这条回执正文；保留的编号和摘要可用于回查。
-                            </p>
-                          )}
+                          <ReceiptReader
+                            key={`${view.run_id}:${id}`}
+                            run={view.run_id}
+                            operation={id}
+                          />
                         </div>
                       );
                     })}
@@ -238,12 +236,10 @@ export function WorkingStateContent({
 export function WorkingStatePanel({
   id,
   status,
-  calls,
   refreshRun,
 }: {
   id: string;
   status: string;
-  calls: Receipt[];
   refreshRun: () => Promise<void>;
 }) {
   const session = useRef(0);
@@ -378,11 +374,7 @@ export function WorkingStatePanel({
           未能读取工作状态：{error}。可刷新重试。
         </p>
       ) : view ? (
-        <WorkingStateContent
-          view={view}
-          calls={calls}
-          historical={revision > 0}
-        />
+        <WorkingStateContent view={view} historical={revision > 0} />
       ) : (
         <p className="muted">
           <Spinner /> 正在读取已保存的版本…

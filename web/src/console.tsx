@@ -56,10 +56,12 @@ import { ToolGovernance } from "./tool-governance";
 import { Notes } from "./notes";
 import {
   WorkingStatePanel,
-  SOURCE_ENGINE,
+  isSourceEngine,
   hasArchiveManifest,
 } from "./working-state";
 import "./working-state.css";
+import { CallReceipts } from "./call-receipts";
+import "./call-receipts.css";
 
 type Page =
   "agents" | "tools" | "knowledge" | "notes" | "runs" | "services" | "settings";
@@ -2392,11 +2394,6 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
   );
   const [selected, setSelected] = useState<any>(null),
     [usage, setUsage] = useState<any>(null),
-    [calls, setCalls] = useState<any[]>([]),
-    [evidence, setEvidence] = useState(""),
-    [decision, setDecision] = useState("completed"),
-    [receipt, setReceipt] = useState("{}"),
-    [callID, setCallID] = useState(""),
     [query, setQuery] = useState(""),
     [stateFilter, setStateFilter] = useState("");
   const visible = runs.filter(
@@ -2410,24 +2407,15 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
   const open = async (id: string) => {
     const version = ++selection.current;
     try {
-      const [r, c, u] = await Promise.all([
+      const [r, u] = await Promise.all([
         api("/runs/" + id),
-        api<any[]>("/runs/" + id + "/calls"),
         api("/runs/" + id + "/usage"),
       ]);
       if (version !== selection.current) return;
-      if (currentRun.current !== id) {
-        setEvidence("");
-        setDecision("completed");
-        setReceipt("{}");
-      }
+
       currentRun.current = id;
       setSelected(r);
-      setCalls(c);
       setUsage(u);
-      setCallID(
-        c.find((x) => ["unknown", "inflight"].includes(x.status))?.id || "",
-      );
     } catch (e) {
       if (version === selection.current) notify((e as Error).message);
     }
@@ -2600,12 +2588,11 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
                 执行记录按批次保存。下载清单包含当前批次的文件索引、校验值及前序清单入口。
               </p>
             )}
-            {selected.engine === SOURCE_ENGINE && (
+            {isSourceEngine(selected.engine) && (
               <WorkingStatePanel
                 key={`${selected.id}:${selection.current}`}
                 id={selected.id}
                 status={selected.status}
-                calls={calls}
                 refreshRun={() => open(selected.id)}
               />
             )}
@@ -2634,70 +2621,18 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
                 保存约束
               </button>
             </details>
-            {selected.status === "waiting_unknown" &&
-              calls.some((c) => ["unknown", "inflight"].includes(c.status)) && (
-                <div className="reconcile-form">
-                  <h3>核对外部执行结果</h3>
-                  <Field label="待核对调用">
-                    <select
-                      value={callID}
-                      onChange={(e) => setCallID(e.target.value)}
-                    >
-                      {calls
-                        .filter((c) =>
-                          ["unknown", "inflight"].includes(c.status),
-                        )
-                        .map((c) => (
-                          <option key={c.id}>{c.id}</option>
-                        ))}
-                    </select>
-                  </Field>
-                  <Field label="结论">
-                    <select
-                      value={decision}
-                      onChange={(e) => setDecision(e.target.value)}
-                    >
-                      <option value="completed">已执行，补录真实结果</option>
-                      <option value="not_executed">
-                        已确认未执行，允许重试
-                      </option>
-                    </select>
-                  </Field>
-                  <Field label="核对依据">
-                    <textarea
-                      value={evidence}
-                      onChange={(e) => setEvidence(e.target.value)}
-                    />
-                  </Field>
-                  <Field label="回执 JSON">
-                    <textarea
-                      value={receipt}
-                      onChange={(e) => setReceipt(e.target.value)}
-                    />
-                  </Field>
-                  <button
-                    className="button primary"
-                    onClick={() =>
-                      void refreshAfter(selected.id, () =>
-                        api("/runs/" + selected.id + "/reconcile", {
-                          call_id: callID,
-                          decision,
-                          evidence,
-                          result: JSON.parse(receipt),
-                        }),
-                      )
-                    }
-                  >
-                    提交核对记录
-                  </button>
-                </div>
-              )}
-            <details>
-              <summary>模型与工具回执 · {calls.length}</summary>
-              {calls.map((c) => (
-                <pre key={c.id}>{JSON.stringify(c, null, 2)}</pre>
-              ))}
-            </details>
+            {selected.status === "waiting_unknown" && (
+              <CallReceipts
+                key={`unresolved:${selected.id}:${selection.current}`}
+                run={selected.id}
+                filter="unresolved"
+                refreshRun={() => open(selected.id)}
+              />
+            )}
+            <CallReceipts
+              key={`all:${selected.id}:${selection.current}`}
+              run={selected.id}
+            />
           </div>
         </Modal>
       )}

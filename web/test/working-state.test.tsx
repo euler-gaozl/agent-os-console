@@ -5,6 +5,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import {
   hasArchiveManifest,
   SOURCE_ENGINE,
+  RESIDENT_ENGINE,
+  isSourceEngine,
   loadWorkingView,
   WorkingStateContent,
   type WorkingView,
@@ -57,17 +59,7 @@ const view: WorkingView = {
 };
 test("history retains current constraints, staleness and provenance without treating classifications as verified facts", () => {
   const html = renderToStaticMarkup(
-    <WorkingStateContent
-      view={view}
-      historical
-      calls={[
-        {
-          id: "test-run/dsh/3",
-          status: "completed",
-          response: { content: "fixture evidence" },
-        },
-      ]}
-    />,
+    <WorkingStateContent view={view} historical />,
   );
   for (const value of [
     "约束 v4",
@@ -79,7 +71,8 @@ test("history retains current constraints, staleness and provenance without trea
     "计划",
     "Reporting periods differ",
     "a".repeat(64),
-    "fixture evidence",
+    "读取回执原文",
+    "test-run/dsh/3",
   ])
     assert.ok(html.includes(value), value);
   assert.ok(!html.includes("<script>"), "untrusted working data became markup");
@@ -91,6 +84,10 @@ test("history retains current constraints, staleness and provenance without trea
   assert.ok(empty.includes("尚未保存工作状态"));
   assert.ok(!empty.includes("工作状态 v0"));
   assert.equal(hasArchiveManifest(SOURCE_ENGINE), true);
+  assert.equal(hasArchiveManifest(RESIDENT_ENGINE), true);
+  assert.equal(isSourceEngine(RESIDENT_ENGINE), true);
+  assert.equal(isSourceEngine(SOURCE_ENGINE), true);
+  assert.equal(isSourceEngine("dsh-0.2.0-rc.2"), false);
   assert.equal(hasArchiveManifest("dsh-0.2.0-rc.2"), false);
 });
 test("working-state reads retain requested run and revision and surface failures", async (t) => {

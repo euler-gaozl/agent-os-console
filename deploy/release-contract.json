@@ -4,6 +4,7 @@
   "schema": "none",
   "migration_owner": "none",
   "backward_compatible": true,
+  "receipt_management": {"format": 1, "requires": "call-receipts-v1"},
   "contract": {
     "http": "agentos-http-v0.6-notes-lifecycle",
     "data": "none",
