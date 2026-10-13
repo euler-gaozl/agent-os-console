@@ -16,6 +16,18 @@ The small CSS/React foundation and bounded HTTP proxy were copied from the recor
 
 Independent tests use synthetic HTTP peers and do not prove paid provider or deployed-service operation. Current source/build/CI/live validation is recorded separately in the integration P2 ledger. Upgrade and rollback require the same HTTP/data/tool contract and bundle the matching BFF plus Web; there is no DB migration to undo.
 
+The 2026-10-13 user-flow increment preserves Enter/newlines in Agent constraints
+until save and distinguishes resource-selector loading from an empty catalog.
+An authenticated loopback preview using actual platform services created and
+reopened `document-checker` with two constraints and pinned Skill/MCP/knowledge
+bindings. Its official DeepSeek trial `94255f1d53b1763b43bbb2da197faab7` completed
+two model requests, read the public source catalog and searched the knowledge
+base. The search returned zero hits for 豆粕: no document read or completed
+market research is claimed. Desktop and narrow-screen checks, nine Web tests,
+Go tests/vet and independent builds passed. Evidence remains local under
+`console-user-flow-39810be19f1046d7ad0e4844a3ada7b8`; the formal Console release
+has not yet been replaced. Full W03–W06 acceptance remains open.
+
 Run scripts/Package-Web.ps1 -Destination <new-path> for a complete immutable native BFF/Web package, then scripts/Test-RelocatedPackage.ps1 -Package <path> to move it to a new sibling and exercise the actual executable with synthetic HTTP peers. The original location must be absent. No source, Node compiler or database is required by the package.
 
 ## Source-engine run management candidate

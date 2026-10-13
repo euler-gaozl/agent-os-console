@@ -807,7 +807,10 @@ function Bindings({
       {catalog.error && (
         <small className="inline-warning">{catalog.error}</small>
       )}
-      {chosen.some((c) => !visible.some((r) => r.id === c.id)) && (
+      {catalog.loading && (
+        <small role="status"><Spinner /> 正在加载可绑定资源…</small>
+      )}
+      {!catalog.loading && chosen.some((c) => !visible.some((r) => r.id === c.id)) && (
         <small>
           已绑定的历史版本或其他页资源仍保留；勾选表示绑定，不代表验活通过。
         </small>
@@ -868,7 +871,7 @@ function Bindings({
             </label>
           );
         })
-      ) : (
+      ) : !catalog.loading && !catalog.error ? (
         <div className="inline-empty">
           暂无
           {
@@ -884,7 +887,7 @@ function Bindings({
           }
           。可以修改搜索条件，或在对应资源页创建。
         </div>
-      )}
+      ) : null}
       <div className="button-row">
         {catalog.after && (
           <button type="button" className="text-button" onClick={catalog.reset}>
@@ -922,6 +925,9 @@ function AgentEditor({
       ...resource?.spec,
     }),
     [id, setID] = useState(resource?.id || ""),
+    [constraintsText, setConstraintsText] = useState(
+      (resource?.spec.constraints || []).join("\n"),
+    ),
     [tab, setTab] = useState("prompt"),
     [busy, setBusy] = useState(false),
     [test, setTest] = useState(""),
@@ -961,7 +967,13 @@ function AgentEditor({
       const r = await api<Resource>("/resources", {
         kind: "agent",
         id,
-        spec: draft,
+        spec: {
+          ...draft,
+          constraints: constraintsText
+            .split(/\r?\n/)
+            .map((line: string) => line.trim())
+            .filter(Boolean),
+        },
       });
       await saved(r);
       if (testing) {
@@ -1076,13 +1088,8 @@ function AgentEditor({
                   hint="每次请求保留，独立于上下文摘要。"
                 >
                   <textarea
-                    value={(draft.constraints || []).join("\n")}
-                    onChange={(e) =>
-                      update(
-                        "constraints",
-                        e.target.value.split("\n").filter(Boolean),
-                      )
-                    }
+                    value={constraintsText}
+                    onChange={(e) => setConstraintsText(e.target.value)}
                   />
                 </Field>
                 <h3 className="section-label">复用提示词</h3>
