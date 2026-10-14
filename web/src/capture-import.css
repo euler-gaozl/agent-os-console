@@ -1,0 +1,233 @@
+.capture-dialog {
+  padding: 24px;
+}
+.capture-destination {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.capture-destination p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 13px;
+}
+.capture-symbol {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 12px;
+}
+.capture-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr);
+  gap: 24px;
+  align-items: start;
+}
+.capture-inputs,
+.capture-preview {
+  min-width: 0;
+}
+.capture-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.capture-recovery {
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 12px;
+  background: var(--canvas);
+}
+.capture-recovery code {
+  display: block;
+  overflow-wrap: anywhere;
+  margin-top: 8px;
+  color: var(--muted);
+}
+.capture-recovery p {
+  line-height: 1.8;
+  color: var(--muted);
+}
+.capture-lookup {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.capture-lookup summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.capture-lookup h4 {
+  font-size: 13px;
+  margin: 0 0 10px;
+}
+.capture-history-list {
+  display: grid;
+  gap: 6px;
+  max-height: 190px;
+  overflow-y: auto;
+}
+.capture-history-list button {
+  text-align: left;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 10px;
+  min-width: 0;
+  cursor: pointer;
+}
+.capture-history-list button:hover {
+  background: var(--accent-soft);
+}
+.capture-history-list span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.capture-history-list small {
+  display: block;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.capture-preview {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  background: var(--canvas);
+}
+.capture-preview h3 {
+  margin: 0 0 10px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  font-size: 17px;
+}
+.capture-url {
+  display: block;
+  font-size: 12px;
+  color: var(--accent);
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+.capture-url svg {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+.capture-time {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.capture-preview .capture-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.95;
+  padding: 0;
+  margin: 16px 0;
+  background: transparent;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.capture-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.capture-fingerprint {
+  margin-top: 16px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.capture-fingerprint summary {
+  cursor: pointer;
+}
+.capture-fingerprint code,
+.capture-fingerprint small {
+  display: block;
+  overflow-wrap: anywhere;
+  margin-top: 7px;
+}
+.capture-placeholder {
+  padding: 65px 12px;
+  text-align: center;
+  color: var(--muted);
+}
+.capture-placeholder svg {
+  margin-bottom: 15px;
+  color: var(--line-strong);
+}
+.capture-placeholder p {
+  font-size: 13px;
+  line-height: 1.9;
+}
+.capture-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.capture-saved {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
+.capture-saved svg {
+  flex-shrink: 0;
+}
+.capture-saved p {
+  font-size: 12px;
+  line-height: 1.8;
+}
+.library-import-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+@media (max-width: 760px) {
+  .capture-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .capture-dialog {
+    padding: 18px;
+  }
+  .capture-preview {
+    padding: 15px;
+  }
+  .capture-placeholder {
+    padding: 26px 8px;
+  }
+  .knowledge-detail .panel-heading {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}

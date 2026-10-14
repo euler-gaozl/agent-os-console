@@ -62,6 +62,8 @@ import {
 import "./working-state.css";
 import { CallReceipts } from "./call-receipts";
 import "./call-receipts.css";
+import { CaptureImportDialog } from "./capture-import";
+import "./capture-import.css";
 
 type Page =
   "agents" | "tools" | "knowledge" | "notes" | "runs" | "services" | "settings";
@@ -2010,6 +2012,7 @@ function Knowledge({
   queryText: string;
   searchCatalog: (q: string) => void;
 }) {
+  const [captureOpen, setCaptureOpen] = useState(false);
   const [selected, setSelected] = useState<Resource | null>(null),
     [files, setFiles] = useState<any[]>([]),
     [query, setQuery] = useState(""),
@@ -2024,6 +2027,7 @@ function Knowledge({
     fileVersion = useRef(0),
     queryVersion = useRef(0);
   const selectLibrary = (next: Resource | null) => {
+    setCaptureOpen(false);
     selectionVersion.current++;
     fileVersion.current++;
     queryVersion.current++;
@@ -2243,13 +2247,16 @@ function Knowledge({
                 })();
               }}
             />
-            <button
-              className="button primary"
-              disabled={busy}
-              onClick={() => upload.current?.click()}
-            >
-              {busy ? <Spinner /> : <Upload size={15} />}上传资料
-            </button>
+            <div className="library-import-actions">
+              <button className="button" onClick={() => setCaptureOpen(true)}><Link2 size={15} />采集网页</button>
+              <button
+                className="button primary"
+                disabled={busy}
+                onClick={() => upload.current?.click()}
+              >
+                {busy ? <Spinner /> : <Upload size={15} />}上传资料
+              </button>
+            </div>
           </div>
           <p className="field-hint">
             支持 UTF-8 TXT、Markdown、CSV、JSON 和 DOCX 正文；单文件 1 MiB。
@@ -2386,6 +2393,13 @@ function Knowledge({
           )}
         </section>
       </div>
+      {captureOpen && <CaptureImportDialog
+        key={selected.id + ":" + selected.revision}
+        knowledge={{ id: selected.id, revision: selected.revision }}
+        name={selected.spec.name}
+        close={() => setCaptureOpen(false)}
+        saved={() => void loadFiles()}
+      />}
     </>
   );
 }

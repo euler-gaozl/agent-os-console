@@ -1,5 +1,32 @@
 # Agent OS console
 
+## Web capture import
+
+Knowledge details now provide a capture / retained-text preview / save workflow.
+The browser checks Sources `source-capture-v1` and Knowledge
+`source-capture-import-v1` before enabling writes. It preserves a caller-generated
+capture ID, exact public URL and immutable Knowledge reference in localStorage
+before sending a request. Closing the dialog does not cancel server processing;
+reopening, URL-scoped history and explicit ID lookup allow recovery. Repeat
+imports use the same capture and Knowledge version. Recovery pointers contain no
+source body or service credentials, and can be explicitly removed without
+deleting server archives.
+
+The preview reads 1,200 Unicode characters at a time. Capture timestamps include
+the year and Beijing timezone and are distinguished from publication/statistical
+periods. Saving includes the complete extracted text and retained response body;
+the response must identify the same capture, file, document and Knowledge version.
+External indexing remains pending until Knowledge reports `ready`.
+
+Fifteen Web tests include discarded replies, storage refusal, fixed targets,
+Unicode pagination and response validation. The real component also has a
+credential-free synthetic browser harness at `web/test/capture-ui.html`, served
+with `pnpm --dir web dev`; it is not a production build entrypoint. Its explicit
+controls exercise delayed capture/import replies, dialog close/reopen, switching
+libraries, lost replies, and unavailable capabilities. Synthetic results do not
+prove live source availability, database durability or research accuracy. Managed
+deployment and real source acceptance are recorded in the integration repository.
+
 Owns the console HTTP BFF and its separately built React/TypeScript Web. Service role is **control**, default port **8090**. The integration repository selects this owner by exact commit. This repository never reads a database and has no migration command; release migration owner is none. Registry, ToolHub, Runtime, Knowledge, Storage and Sources retain their own data and authorization.
 
 ## Build
