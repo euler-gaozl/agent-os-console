@@ -21,7 +21,7 @@
 
 ## 独立构建与部署
 
-需要 Go 1.27.2、Node 24.19.0、pnpm 11.25.0。SDK rc.2 已固定并随 `vendor` 提交，不需要相邻源码或私有模块令牌。
+需要 Go 1.27.2、Node 24.19.0、pnpm 11.25.0。SDK rc.3 已固定并随 `vendor` 提交，不需要相邻源码或私有模块令牌。
 
 ```powershell
 $env:GOWORK='off'; $env:GOPROXY='off'
@@ -38,6 +38,16 @@ pnpm --dir web run build
 升级/回滚需把匹配的 BFF 与 Web 作为完整包替换，并保持 HTTP 契约兼容；本服务没有数据库回滚。就绪检查只证明本进程可用，下游状态由页面另行展示。
 
 ## 验证与当前状态
+
+`feat/model-native-limits` 候选为新建 Agent 默认启用供应商原生输入输出能力，
+由 Registry 保存时重新读取并冻结；模型设置页提供只读预览、来源和观测时间。
+历史版本保留原配置，用户可明确选择让下个版本采用原生能力。输入输出共享模型窗口，
+尝试次数与重试保护独立保留。必须先安装支持能力发现的 Registry 及 native-v4 Runtime/Worker，
+再安装此 Console；当前正式版本尚未切换。
+
+单项任务提交通道接受 32 MiB HTTP 请求，任务详情回复容纳 64 MiB；其他接口保持原容量。
+这些是传输保护，Runtime 仍负责按引擎验证任务。超量或断开的上游回复返回明确错误，
+不再截断后报告成功。BFF 不解析供应商密钥，浏览器只提交凭证名称。
 
 本地 Web、Go、浏览器和发布包检查覆盖丢回复、关闭重开、Unicode 分页、版本冲突和窄屏。`web/test/capture-ui.html` 是无凭证的模拟交互入口，不属于生产构建。真实采集、模型试运行和安装记录见 [平台验收文档](https://github.com/euler-gaozl/agent-os/blob/main/docs/windows-single-machine-plan.md)。完整页面验收仍在进行；模拟 HTTP 通过不代表真实模型、数据库恢复或研究质量通过。
 

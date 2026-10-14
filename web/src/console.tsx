@@ -64,6 +64,8 @@ import { CallReceipts } from "./call-receipts";
 import "./call-receipts.css";
 import { CaptureImportDialog } from "./capture-import";
 import "./capture-import.css";
+import { ModelCapabilities, modelIdentity, nativeModelDraft } from "./model-capabilities";
+import "./model-capabilities.css";
 
 type Page =
   "agents" | "tools" | "knowledge" | "notes" | "runs" | "services" | "settings";
@@ -95,15 +97,16 @@ const blankAgent = () => ({
     model: "deepseek-flash",
     key_env: "DEEPSEEK_API_KEY",
     thinking: "disabled",
-    max_tokens: 4096,
+    max_tokens: 0,
+    limits: {},
   },
   publication: { enabled: false, app: "futures", name: "", description: "" },
   constraints: [],
   max_steps: 12,
-  max_model_attempts: 40,
-  model_token_budget: 200000,
-  context_bytes: 64000,
-  context_tokens: 32000,
+  max_model_attempts: 36,
+  model_token_budget: 0,
+  context_bytes: 0,
+  context_tokens: 0,
   max_children: 2,
 });
 function Console() {
@@ -937,7 +940,11 @@ function AgentEditor({
     [runID, setRunID] = useState(""),
     [events, setEvents] = useState<any[]>([]);
   const update = (key: string, value: any) =>
-    setDraft((d: any) => ({ ...d, [key]: value }));
+    setDraft((d: any) => {
+      const next = { ...d, [key]: value };
+      return key === "model" && value.limits != null && modelIdentity(value) !== modelIdentity(d.model)
+        ? nativeModelDraft(next) : next;
+    });
   useEffect(() => {
     if (!runID) return;
     let alive = true;
@@ -978,6 +985,7 @@ function AgentEditor({
         },
       });
       await saved(r);
+      setDraft((current: any) => current === draft ? r.spec : current);
       if (testing) {
         const accepted = await api("/runs", {
           agent: { id: r.id, revision: r.revision },
@@ -1310,7 +1318,8 @@ function AgentEditor({
                     />
                   </Field>
                 </div>
-                <h3 className="section-label">执行预算</h3>
+                <ModelCapabilities model={draft.model} enableNative={() => setDraft((d: any) => nativeModelDraft(d))} />
+                <h3 className="section-label">执行设置</h3>
                 <div className="two-fields">
                   <Field label="思考模式（兼容 DeepSeek）">
                     <select
@@ -1328,7 +1337,7 @@ function AgentEditor({
                       <option value="enabled">开启 · 复杂核验</option>
                     </select>
                   </Field>
-                  <Field label="单次输出上限 / tokens">
+                  {!draft.model.limits && <Field label="历史单次输出额度 / tokens">
                     <input
                       type="number"
                       min={1}
@@ -1341,7 +1350,7 @@ function AgentEditor({
                         })
                       }
                     />
-                  </Field>
+                  </Field>}
                 </div>
                 <div className="two-fields">
                   {[
@@ -1350,8 +1359,10 @@ function AgentEditor({
                       "max_model_attempts",
                       "整项任务模型尝试上限（含子任务及重试）",
                     ],
-                    ["model_token_budget", "整项任务 token 预算（含子任务）"],
-                    ["context_tokens", "上下文预算 / 估算 tokens"],
+                    ...(!draft.model.limits ? [
+                      ["model_token_budget", "历史整项任务 token 预算（含子任务）"],
+                      ["context_tokens", "历史上下文预算 / 估算 tokens"],
+                    ] : []),
                     ["max_children", "最多直属子任务"],
                   ].map(([key, name]) => (
                     <Field key={key} label={name}>
@@ -1364,8 +1375,7 @@ function AgentEditor({
                   ))}
                 </div>
                 <p className="field-hint">
-                  修改预算会随 Agent
-                  生成新版本。所有模型调用都会保留实际请求与结果。
+                  调用次数用于约束循环和重试，与输入输出长度分开。修改会生成新版本，已有任务不变；模型调用保留实际请求、结果和用量。
                 </p>
               </>
             )}

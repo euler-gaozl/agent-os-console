@@ -1,0 +1,9 @@
+.model-capabilities { border: 1px solid var(--border, #e5e7eb); border-radius: 12px; padding: 18px; margin: 20px 0; background: var(--surface, #fff); }
+.model-capabilities-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.model-capabilities-heading p { color: var(--text-muted, #667085); font-size: 13px; line-height: 1.6; margin: 6px 0 0; }
+.model-capabilities-heading button { flex-shrink: 0; }
+.model-capabilities-values { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.model-capabilities-values dt { font-size: 12px; color: var(--text-muted, #667085); margin-bottom: 8px; }
+.model-capabilities-values dd { font-size: 22px; font-variant-numeric: tabular-nums; margin: 0; }
+.model-capabilities-values small { font-size: 12px; color: var(--text-muted, #667085); }
+@media (max-width: 620px) { .model-capabilities-heading { flex-direction: column; } .model-capabilities-values { grid-template-columns: 1fr; } }

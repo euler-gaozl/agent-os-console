@@ -1,16 +1,29 @@
 package webproxy
 
 import (
+	"bytes"
 	"github.com/euler-gaozl/agent-os-sdk/servicehttp"
 	"io"
 	"net/http"
 )
 
 func Proxy(w http.ResponseWriter, r *http.Request, target, token string) {
+	ProxyLimits(w, r, target, token, 2<<20, 4<<20)
+}
+
+// Limits are selected by a fixed BFF route, never supplied by the browser.
+// Buffer before committing a success status: an oversized or incomplete reply
+// must not look like a successful, silently truncated JSON response.
+func ProxyLimits(w http.ResponseWriter, r *http.Request, target, token string, requestLimit, responseLimit int64) {
 	if r.URL.RawQuery != "" {
 		target += "?" + r.URL.RawQuery
 	}
-	req, e := http.NewRequestWithContext(r.Context(), r.Method, target, http.MaxBytesReader(w, r.Body, 2<<20))
+	body, e := io.ReadAll(http.MaxBytesReader(w, r.Body, requestLimit))
+	if e != nil {
+		servicehttp.JSONResponse(w, 413, map[string]string{"error": "request exceeds the transport capacity or could not be read"})
+		return
+	}
+	req, e := http.NewRequestWithContext(r.Context(), r.Method, target, bytes.NewReader(body))
 	if e != nil {
 		servicehttp.JSONResponse(w, 400, map[string]string{"error": "invalid request"})
 		return
@@ -24,11 +37,16 @@ func Proxy(w http.ResponseWriter, r *http.Request, target, token string) {
 		return
 	}
 	defer resp.Body.Close()
+	result, e := io.ReadAll(io.LimitReader(resp.Body, responseLimit+1))
+	if e != nil || int64(len(result)) > responseLimit {
+		servicehttp.JSONResponse(w, 502, map[string]string{"error": "upstream response is incomplete or exceeds the transport capacity"})
+		return
+	}
 	for _, h := range []string{"Content-Type", "Content-Disposition", "X-Artifact-Media-Type", "Retry-After"} {
 		if v := resp.Header.Get(h); v != "" {
 			w.Header().Set(h, v)
 		}
 	}
 	w.WriteHeader(resp.StatusCode)
-	_, _ = io.Copy(w, io.LimitReader(resp.Body, 4<<20))
+	_, _ = w.Write(result)
 }

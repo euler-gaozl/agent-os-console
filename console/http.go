@@ -37,6 +37,9 @@ func (s *Server) Routes(mux *http.ServeMux) {
 		})
 	}
 	mux.HandleFunc("/api/connectors/discover", func(w http.ResponseWriter, r *http.Request) { s.proxy(w, r, s.Client.CatalogURL+"/v1/discover") })
+	mux.HandleFunc("POST /api/models/resolve", func(w http.ResponseWriter, r *http.Request) {
+		s.proxy(w, r, s.Client.RegistryURL+"/v1/models/resolve")
+	})
 	mux.HandleFunc("/api/toolhub/", func(w http.ResponseWriter, r *http.Request) {
 		s.proxy(w, r, s.Client.CatalogURL+strings.Replace(r.URL.Path, "/api/toolhub/", "/v1/", 1))
 	})
@@ -45,7 +48,17 @@ func (s *Server) Routes(mux *http.ServeMux) {
 	})
 	for _, prefix := range []string{"/api/runs", "/api/runs/"} {
 		mux.HandleFunc(prefix, func(w http.ResponseWriter, r *http.Request) {
-			s.proxy(w, r, s.Client.RuntimeURL+strings.Replace(r.URL.Path, "/api/", "/v1/", 1))
+			target := s.Client.RuntimeURL + strings.Replace(r.URL.Path, "/api/", "/v1/", 1)
+			if r.Method == http.MethodPost && r.URL.Path == "/api/runs" {
+				webproxy.ProxyLimits(w, r, target, s.Client.Token, 32<<20, 64<<20)
+				return
+			}
+			id := strings.TrimPrefix(r.URL.Path, "/api/runs/")
+			if r.Method == http.MethodGet && r.URL.Path != "/api/runs" && id != "" && !strings.Contains(id, "/") {
+				webproxy.ProxyLimits(w, r, target, s.Client.Token, 2<<20, 64<<20)
+				return
+			}
+			s.proxy(w, r, target)
 		})
 	}
 	mux.HandleFunc("/api/knowledge/", func(w http.ResponseWriter, r *http.Request) {
