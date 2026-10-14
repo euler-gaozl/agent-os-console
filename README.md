@@ -45,6 +45,8 @@ pnpm --dir web run build
 尝试次数与重试保护独立保留。必须先安装支持能力发现的 Registry 及 native-v4 Runtime/Worker，
 再安装此 Console；当前正式版本尚未切换。
 
+保存资源前，中台通过已绑定 Registry 的鉴权能力端点核对 `agent-model-native-v1`；旧版本、异常响应或连接失败返回明确错误，不转发保存，避免旧 Registry 静默丢弃模型字段。`--model-management-profile` 提供无需配置的发布器声明。请求前探测不能替代升级/回退兼容检查，部署时仍须保持声明与实际绑定服务一致。
+
 单项任务提交通道接受 32 MiB HTTP 请求，任务详情回复容纳 64 MiB；其他接口保持原容量。
 这些是传输保护，Runtime 仍负责按引擎验证任务。超量或断开的上游回复返回明确错误，
 不再截断后报告成功。BFF 不解析供应商密钥，浏览器只提交凭证名称。

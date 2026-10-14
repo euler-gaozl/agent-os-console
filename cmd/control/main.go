@@ -2,14 +2,20 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/euler-gaozl/agent-os-console/console"
 	"github.com/euler-gaozl/agent-os-sdk/servicehost"
 	"github.com/euler-gaozl/agent-os-sdk/servicehttp"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"net/http"
+	"os"
 )
 
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "--model-management-profile" {
+		_ = json.NewEncoder(os.Stdout).Encode(console.ModelManagementProfile())
+		return
+	}
 	servicehost.Main(servicehost.Options{Role: "control", Port: "8090", Database: false, Concurrency: 16, UserFacing: true, PublicPath: console.PublicPath, AdminTokenEnv: "ADMIN_TOKEN"}, func(ctx context.Context, p *pgxpool.Pool, c servicehttp.Config) (http.Handler, func(context.Context) error, error) {
 		if err := console.ValidateUserToken(c); err != nil {
 			return nil, nil, err

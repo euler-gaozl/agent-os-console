@@ -29,6 +29,9 @@ func (s *Server) Routes(mux *http.ServeMux) {
 	})
 	for _, prefix := range []string{"/api/resources", "/api/credentials"} {
 		mux.HandleFunc(prefix, func(w http.ResponseWriter, r *http.Request) {
+			if r.Method == http.MethodPost && r.URL.Path == "/api/resources" && !s.modelManagementReady(w, r) {
+				return
+			}
 			if r.Method == "GET" && r.URL.Path == "/api/resources" {
 				s.resources(w, r)
 				return

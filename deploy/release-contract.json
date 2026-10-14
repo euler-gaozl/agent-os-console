@@ -1,5 +1,6 @@
 {
   "format": 1,
+  "model_management": {"format": 1, "requires": "agent-model-native-v1"},
   "role": "control",
   "schema": "none",
   "migration_owner": "none",
