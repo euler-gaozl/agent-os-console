@@ -1,0 +1,13 @@
+.business-link-label small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.business-link[aria-disabled="true"] {
+  color: var(--muted);
+  cursor: default;
+}
+.business-link[aria-disabled="true"]:hover {
+  background: transparent;
+}

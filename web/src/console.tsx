@@ -66,6 +66,8 @@ import { CaptureImportDialog } from "./capture-import";
 import "./capture-import.css";
 import { ModelCapabilities, modelIdentity, nativeModelDraft } from "./model-capabilities";
 import "./model-capabilities.css";
+import { BusinessEntryLink, businessEntryFromConfig, type BusinessEntry } from "./business-entry";
+import "./business-entry.css";
 
 type Page =
   "agents" | "tools" | "knowledge" | "notes" | "runs" | "services" | "settings";
@@ -114,6 +116,7 @@ function Console() {
     [resources, setResources] = useState<Resource[]>([]),
     [runs, setRuns] = useState<any[]>([]),
     [status, setStatus] = useState<any>({ instances: [] }),
+    [businessEntry, setBusinessEntry] = useState<BusinessEntry>({ status: "loading" }),
     [ready, setReady] = useState(false),
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
@@ -166,12 +169,13 @@ function Console() {
   const load = useCallback(async () => {
     if (currentCatalog.current !== catalogIdentity) return;
     const version = ++requestVersion.current;
-    const [r, run, st] = await Promise.allSettled([
+    const [r, run, st, ui] = await Promise.allSettled([
       api<CatalogPage>(
         "/catalog?" + new URLSearchParams({ kind, q: search, after }),
       ),
       api<any[]>("/runs"),
       api<any>("/status"),
+      api<unknown>("/ui-config"),
     ]);
     if (
       version !== requestVersion.current ||
@@ -179,11 +183,12 @@ function Console() {
     )
       return;
     if (
-      [r, run, st].some(
+      [r, run, st, ui].some(
         (x) => x.status === "rejected" && x.reason?.status === 401,
       )
     ) {
       setReady(false);
+      setBusinessEntry({ status: "unavailable" });
       setError("请使用管理访问令牌登录。");
       return;
     }
@@ -201,6 +206,11 @@ function Console() {
     else failures.push("运行记录");
     if (st.status === "fulfilled") setStatus(st.value);
     else failures.push("服务状态");
+    const entry = ui.status === "fulfilled"
+      ? businessEntryFromConfig(ui.value)
+      : { status: "unavailable" as const };
+    setBusinessEntry(entry);
+    if (entry.status === "unavailable") failures.push("业务入口");
     setReady(true);
     setCatalogLoading(false);
     setError(
@@ -383,18 +393,7 @@ function Console() {
         {navigation}
         <div className="sidebar-bottom">
           <div className="nav-caption">业务应用</div>
-          <a
-            className="business-link"
-            href="http://127.0.0.1:8098"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <span className="app-icon">
-              <Layers size={16} />
-            </span>
-            研序 · 期货研究
-            <ArrowUpRight size={14} />
-          </a>
+          <BusinessEntryLink entry={businessEntry} />
           <div className="profile">
             <span>
               <ShieldCheck size={16} />
@@ -722,16 +721,7 @@ function Console() {
         <Modal title="工作区导航" close={() => setMobileNav(false)}>
           <div className="modal-body drawer-navigation">
             {navigation}
-            <a
-              className="business-link"
-              href="http://127.0.0.1:8098"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Layers size={17} />
-              研序 · 期货研究
-              <ArrowUpRight size={14} />
-            </a>
+            <BusinessEntryLink entry={businessEntry} />
           </div>
         </Modal>
       )}

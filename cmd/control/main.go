@@ -23,6 +23,10 @@ func main() {
 		if err := applyLocalDefaults(); err != nil {
 			return nil, nil, err
 		}
-		return (&console.Server{HTTP: c, Client: servicehost.Client(), SourcesURL: servicehost.Env("SOURCES_URL", "http://127.0.0.1:8101"), StorageURL: servicehost.Env("STORAGE_URL", "http://127.0.0.1:8092"), KnowledgeURL: servicehost.Env("KNOWLEDGE_URL", "http://127.0.0.1:8095"), WebDir: servicehost.Env("WEB_DIR", "web/dist")}).Handler(), nil, nil
+		entry, err := console.PublicFuturesURL(os.Getenv("FUTURES_PUBLIC_URL"))
+		if err != nil {
+			return nil, nil, err
+		}
+		return (&console.Server{HTTP: c, Client: servicehost.Client(), SourcesURL: servicehost.Env("SOURCES_URL", "http://127.0.0.1:8101"), StorageURL: servicehost.Env("STORAGE_URL", "http://127.0.0.1:8092"), KnowledgeURL: servicehost.Env("KNOWLEDGE_URL", "http://127.0.0.1:8095"), WebDir: servicehost.Env("WEB_DIR", "web/dist"), FuturesPublicURL: entry}).Handler(), nil, nil
 	})
 }

@@ -19,10 +19,12 @@ type Server struct {
 	Client                           serviceclient.Client
 	KnowledgeURL, StorageURL, WebDir string
 	SourcesURL                       string
+	FuturesPublicURL                 string
 }
 
 func (s *Server) Handler() http.Handler { return servicehttp.New(s.HTTP, nil, s.Routes) }
 func (s *Server) Routes(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/ui-config", servicehttp.Wrap(s.uiConfig))
 	mux.HandleFunc("GET /api/catalog", servicehttp.Wrap(s.catalog))
 	mux.HandleFunc("GET /api/resources/", func(w http.ResponseWriter, r *http.Request) {
 		s.proxy(w, r, s.Client.RegistryURL+strings.Replace(r.URL.Path, "/api/", "/v1/", 1))
