@@ -1,0 +1,7 @@
+.continuation-panel { margin: 20px 0; padding: 16px; border: 1px solid var(--border, #d9dfe7); border-radius: 12px; }
+.continuation-panel h3 { margin: 0 0 8px; font-size: 16px; }
+.continuation-panel p { line-height: 1.6; }
+.continuation-panel [role="alert"] { color: var(--danger, #b42318); }
+.continuation-panel .button-row { flex-wrap: wrap; }
+.continuation-request { overflow-wrap: anywhere; font-size: 13px; }
+.continuation-receipt { padding: 8px 12px; border-left: 3px solid var(--border, #d9dfe7); }

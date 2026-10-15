@@ -24,6 +24,7 @@ type Server struct {
 
 func (s *Server) Handler() http.Handler { return servicehttp.New(s.HTTP, nil, s.Routes) }
 func (s *Server) Routes(mux *http.ServeMux) {
+	s.continuationRoutes(mux)
 	mux.HandleFunc("GET /api/ui-config", servicehttp.Wrap(s.uiConfig))
 	mux.HandleFunc("GET /api/catalog", servicehttp.Wrap(s.catalog))
 	mux.HandleFunc("GET /api/resources/", func(w http.ResponseWriter, r *http.Request) {

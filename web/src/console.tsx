@@ -55,6 +55,9 @@ import "./console-layout.css";
 import { ToolGovernance } from "./tool-governance";
 import { Notes } from "./notes";
 import { RunArchiveButton, RunEvidenceDetails } from "./run-evidence";
+import { ContinuationPanel } from "./continuation";
+import { NATIVE_CONTINUATION_ENGINE, continuationRefresh } from "./continuation-client";
+import "./continuation.css";
 import "./working-state.css";
 import { CallReceipts } from "./call-receipts";
 import "./call-receipts.css";
@@ -2564,7 +2567,7 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
                 <RefreshCw size={15} />
                 更新详情
               </button>
-              {selected.status === "failed" && !selected.cancel_requested && (
+              {selected.engine !== NATIVE_CONTINUATION_ENGINE && selected.status === "failed" && !selected.cancel_requested && (
                 <button
                   className="button"
                   onClick={() =>
@@ -2594,6 +2597,15 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
                 </button>
               )}
             </div>
+            {selected.engine === NATIVE_CONTINUATION_ENGINE && <ContinuationPanel
+              key={selected.id}
+              run={selected.id}
+              status={selected.status}
+              attempts={usage?.attempts}
+              maxAttempts={selected.snapshot?.agent?.max_model_attempts}
+              refreshRun={continuationRefresh(selected.id, selection.current,
+                () => ({ run: currentRun.current, version: selection.current }), open)}
+            />}
             <RunEvidenceDetails
               key={`${selected.id}:${selection.current}`}
               id={selected.id}
