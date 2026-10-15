@@ -11,8 +11,13 @@ import { ReceiptReader } from "./call-receipts";
 
 export const SOURCE_ENGINE = "dsh-source-639ed015-state-v1";
 export const RESIDENT_ENGINE = "dsh-source-639ed015-resident-v2";
+export const BUDGET_ENGINE = "dsh-source-639ed015-budget-v3";
+export const NATIVE_ENGINE = "dsh-source-639ed015-native-v4";
 export const isSourceEngine = (engine: string) =>
-  engine === SOURCE_ENGINE || engine === RESIDENT_ENGINE;
+  engine === SOURCE_ENGINE ||
+  engine === RESIDENT_ENGINE ||
+  engine === BUDGET_ENGINE ||
+  engine === NATIVE_ENGINE;
 export const hasArchiveManifest = (engine: string) =>
   isSourceEngine(engine) || engine === "dsh-0.2.0-rc.2-evidence-v1";
 

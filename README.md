@@ -58,3 +58,7 @@ pnpm --dir web run build
 本地 Web、Go、浏览器和发布包检查覆盖丢回复、关闭重开、Unicode 分页、版本冲突和窄屏。`web/test/capture-ui.html` 是无凭证的模拟交互入口，不属于生产构建。真实采集、模型试运行和安装记录见 [平台验收文档](https://github.com/euler-gaozl/agent-os/blob/main/docs/windows-single-machine-plan.md)。完整页面验收仍在进行；模拟 HTTP 通过不代表真实模型、数据库恢复或研究质量通过。
 
 Actions 日常保持关闭，最终统一 CI 尚待平台验收阶段执行。[历史实现与验收细节](docs/history/service-notes-20261014.en.md) 保留原始英文记录。
+
+2026-10-15 Mac 源码增量：运行详情明确识别固定 state-v1、resident-v2、budget-v3 和 native-v4，引导到已有工作状态及历史修订面板，并将这些引擎的归档下载标为执行记录清单。evidence-v1 仅提供清单，历史与未知引擎不开放源码状态面板。此修复不改变失败任务继续、人工核对、任务快照、预算或 DSH 协议，也不表示失败任务自动接续已实现。
+
+本增量有 7 项定向 Web 检查通过（新增 5 项，零跳过）；应用到实际源码后，完整 Web 测试 27 项通过、零跳过，TypeScript 检查通过，覆盖实际组件的静态渲染、固定引擎/历史边界和归档下载回调；TypeScript 与 Vite 构建通过。waiting_unknown 的新增断言仅核对初始未取得恢复许可时没有执行按钮，未模拟服务返回允许/拒绝后的交互，不替代真实浏览器或 native-v4 管理恢复联合验收。

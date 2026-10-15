@@ -54,11 +54,7 @@ import "./console.css";
 import "./console-layout.css";
 import { ToolGovernance } from "./tool-governance";
 import { Notes } from "./notes";
-import {
-  WorkingStatePanel,
-  isSourceEngine,
-  hasArchiveManifest,
-} from "./working-state";
+import { RunArchiveButton, RunEvidenceDetails } from "./run-evidence";
 import "./working-state.css";
 import { CallReceipts } from "./call-receipts";
 import "./call-receipts.css";
@@ -2554,22 +2550,16 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
               </Answer>
             </article>
             <div className="button-row">
-              {selected.state.harness_artifact && (
-                <button
-                  className="button"
-                  onClick={() =>
-                    void downloadArtifact(
-                      selected.state.harness_artifact,
-                      `dsh-${hasArchiveManifest(selected.engine) ? "manifest-" : ""}${selected.id}.json`,
-                    ).catch((e) => notify(e.message))
-                  }
-                >
-                  <FileText size={15} />
-                  {hasArchiveManifest(selected.engine)
-                    ? "下载执行记录清单"
-                    : "下载完整 DSH 执行记录"}
-                </button>
-              )}
+              <RunArchiveButton
+                id={selected.id}
+                engine={selected.engine}
+                artifact={selected.state.harness_artifact}
+                download={(artifact, filename) =>
+                  void downloadArtifact(artifact, filename).catch((e) =>
+                    notify(e.message),
+                  )
+                }
+              />
               <button className="button" onClick={() => void open(selected.id)}>
                 <RefreshCw size={15} />
                 更新详情
@@ -2604,19 +2594,13 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
                 </button>
               )}
             </div>
-            {hasArchiveManifest(selected.engine) && (
-              <p className="muted">
-                执行记录按批次保存。下载清单包含当前批次的文件索引、校验值及前序清单入口。
-              </p>
-            )}
-            {isSourceEngine(selected.engine) && (
-              <WorkingStatePanel
-                key={`${selected.id}:${selection.current}`}
-                id={selected.id}
-                status={selected.status}
-                refreshRun={() => open(selected.id)}
-              />
-            )}
+            <RunEvidenceDetails
+              key={`${selected.id}:${selection.current}`}
+              id={selected.id}
+              engine={selected.engine}
+              status={selected.status}
+              refreshRun={() => open(selected.id)}
+            />
             <details>
               <summary>修订当前任务及未结束子任务的约束</summary>
               <textarea
