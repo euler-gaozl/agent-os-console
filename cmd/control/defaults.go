@@ -12,5 +12,12 @@ func applyLocalDefaults() error {
 			}
 		}
 	}
+	// The local owner layout has a sibling Futures BFF. Do not infer this
+	// address outside explicit local-dev mode; production must configure it.
+	if os.Getenv("DEV_LOCAL") == "1" && os.Getenv("FUTURES_PUBLIC_URL") == "" {
+		if err := os.Setenv("FUTURES_PUBLIC_URL", "http://127.0.0.1:8098/"); err != nil {
+			return err
+		}
+	}
 	return nil
 }
