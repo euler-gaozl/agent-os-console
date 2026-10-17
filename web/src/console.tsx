@@ -56,7 +56,7 @@ import { ToolGovernance } from "./tool-governance";
 import { Notes } from "./notes";
 import { RunArchiveButton, RunEvidenceDetails } from "./run-evidence";
 import { ContinuationPanel } from "./continuation";
-import { NATIVE_CONTINUATION_ENGINE, continuationRefresh } from "./continuation-client";
+import { supportsContinuation, continuationRefresh } from "./continuation-client";
 import "./continuation.css";
 import "./working-state.css";
 import { CallReceipts } from "./call-receipts";
@@ -65,6 +65,8 @@ import { CaptureImportDialog } from "./capture-import";
 import "./capture-import.css";
 import { ModelCapabilities, modelIdentity, nativeModelDraft } from "./model-capabilities";
 import "./model-capabilities.css";
+import { FinalOutputEditor, finalOutputError } from "./final-output";
+import "./final-output.css";
 import { BusinessEntryLink, businessEntryFromConfig, type BusinessEntry } from "./business-entry";
 import "./business-entry.css";
 
@@ -962,6 +964,8 @@ function AgentEditor({
     setBusy(true);
     try {
       if (testing && !test.trim()) throw new Error("先输入试运行任务");
+      const policyError = finalOutputError(draft);
+      if (policyError) throw new Error(policyError);
       const r = await api<Resource>("/resources", {
         kind: "agent",
         id,
@@ -1308,6 +1312,7 @@ function AgentEditor({
                   </Field>
                 </div>
                 <ModelCapabilities model={draft.model} enableNative={() => setDraft((d: any) => nativeModelDraft(d))} />
+                <FinalOutputEditor draft={draft} change={value => update("final_output", value)} />
                 <h3 className="section-label">执行设置</h3>
                 <div className="two-fields">
                   <Field label="思考模式（兼容 DeepSeek）">
@@ -2567,7 +2572,7 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
                 <RefreshCw size={15} />
                 更新详情
               </button>
-              {selected.engine !== NATIVE_CONTINUATION_ENGINE && selected.status === "failed" && !selected.cancel_requested && (
+              {!supportsContinuation(selected.engine) && selected.status === "failed" && !selected.cancel_requested && (
                 <button
                   className="button"
                   onClick={() =>
@@ -2597,7 +2602,7 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
                 </button>
               )}
             </div>
-            {selected.engine === NATIVE_CONTINUATION_ENGINE && <ContinuationPanel
+            {supportsContinuation(selected.engine) && <ContinuationPanel
               key={selected.id}
               run={selected.id}
               status={selected.status}

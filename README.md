@@ -25,7 +25,7 @@
 
 ## 独立构建与部署
 
-需要 Go 1.27.2、Node 24.19.0、pnpm 11.25.0。SDK rc.3 已固定并随 `vendor` 提交，不需要相邻源码或私有模块令牌。
+需要 Go 1.27.2、Node 24.19.0、pnpm 11.25.0。SDK rc.4 已固定并随 `vendor` 提交，不需要相邻源码或私有模块令牌。
 
 ```powershell
 $env:GOWORK='off'; $env:GOPROXY='off'
@@ -43,13 +43,21 @@ pnpm --dir web run build
 
 ## 验证与当前状态
 
+2026-10-17 新增“模型与执行 → 交付方式”候选，可保存 `final_output` 固定策略：选择检查工具、原文输入字段及布尔就绪路径。MCP 候选来自 Agent 已绑定的精确资源版本；读取失败保留原配置，保存时仍由 Registry 权威校验。模型转换、其他字段编辑及版本回读不丢策略；不支持的协议不会被静默修正。结构就绪不代表来源或事实正确。
+
+此候选要求 Registry 同时声明 `agent-model-native-v1` 和 `final_output: receipt-field-v1`。旧 Registry 不能再接收资源保存以免丢字段；部署声明新增 `requires_final_output`。必须先完成平台发布兼容门槛，再按 Registry/Runtime/Worker/Console 组合升级；候选尚未正式安装。
+
+运行详情识别明确固定的 final-v5，用现有管理接续预览/回执入口，不显示绕过审计的旧 resume 按钮；v5 的 Owner 接续支持仍待安装前集成。页面不能授予服务端没有返回的恢复许可。源码工作状态和归档清单支持 v5，未知引擎仍拒绝。
+
+本轮后端与 Web 测试、类型检查和独立构建记录于集成仓的 Windows 交付记录。`web/test/final-output-ui.html` 提供实际生产组件的无凭证模拟交互入口；本机临时验收服务启动被自动审批拦截，**浏览器点击、延迟回复及窄屏实测尚未完成**，不能用静态渲染测试代替。没有付费模型调用或 Actions。
+
 `feat/model-native-limits` 候选为新建 Agent 默认启用供应商原生输入输出能力，
 由 Registry 保存时重新读取并冻结；模型设置页提供只读预览、来源和观测时间。
 历史版本保留原配置，用户可明确选择让下个版本采用原生能力。输入输出共享模型窗口，
 尝试次数与重试保护独立保留。必须先安装支持能力发现的 Registry 及 native-v4 Runtime/Worker，
 再安装此 Console；当前正式版本尚未切换。
 
-保存资源前，中台通过已绑定 Registry 的鉴权能力端点核对 `agent-model-native-v1`；旧版本、异常响应或连接失败返回明确错误，不转发保存，避免旧 Registry 静默丢弃模型字段。`--model-management-profile` 提供无需配置的发布器声明。请求前探测不能替代升级/回退兼容检查，部署时仍须保持声明与实际绑定服务一致。
+保存资源前，中台通过已绑定 Registry 的鉴权能力端点核对 `agent-model-native-v1` 和 `receipt-field-v1`；旧版本、异常响应或连接失败返回明确错误，不转发保存，避免旧 Registry 静默丢弃模型字段。`--model-management-profile` 提供无需配置的发布器声明。请求前探测不能替代升级/回退兼容检查，部署时仍须保持声明与实际绑定服务一致。
 
 单项任务提交通道接受 32 MiB HTTP 请求，任务详情回复容纳 64 MiB；其他接口保持原容量。
 这些是传输保护，Runtime 仍负责按引擎验证任务。超量或断开的上游回复返回明确错误，

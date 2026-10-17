@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import {
   continuationContext, lookupContinuation, retainContinuation, startContinuation,
   sendPendingContinuation, confirmContinuation, pendingContinuations,
-  continuationStorageChanged, continuationRefresh, type PendingContinuation,
+  continuationStorageChanged, continuationRefresh, supportsContinuation, type PendingContinuation,
 } from "../src/continuation-client";
 import { ContinuationPanel } from "../src/continuation";
 
@@ -134,7 +134,10 @@ test("context and receipt reads are GET only and bind the exact task and failure
     assert.equal(path, "/api/runs/task%2Fa/continuation/request-context");
     assert.equal(init?.method, "GET"); assert.equal(init?.body, undefined); return reply(context, 200);
   }), context);
-  for (const changed of [{ run_id: "other" }, { status: "completed" }, { failure_version: 123 }, { engine: "legacy" }])
+  const finalContext = { ...context, engine: "dsh-source-639ed015-final-v5" };
+  assert.deepEqual(await continuationContext("task/a", async () => reply(finalContext, 200)), finalContext);
+  assert.equal(supportsContinuation(finalContext.engine), true);
+  for (const changed of [{ run_id: "other" }, { status: "completed" }, { failure_version: 123 }, { engine: "legacy" }, { engine: "dsh-source-639ed015-final-v6" }])
     await assert.rejects(continuationContext("task/a", async () => reply({ ...context, ...changed }, 200)));
   const storage = new MemoryStorage(), pending = create(storage);
   const got = await lookupContinuation(pending, async (path, init) => {

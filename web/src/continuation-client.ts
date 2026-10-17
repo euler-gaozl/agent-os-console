@@ -1,4 +1,7 @@
 export const NATIVE_CONTINUATION_ENGINE = "dsh-source-639ed015-native-v4";
+export const FINAL_CONTINUATION_ENGINE = "dsh-source-639ed015-final-v5";
+export const supportsContinuation = (engine: string) =>
+  engine === NATIVE_CONTINUATION_ENGINE || engine === FINAL_CONTINUATION_ENGINE;
 const pendingPrefix = "agentos-continuation-pending:v1:";
 const requestID = /^[A-Za-z0-9_-]{1,128}$/;
 const failureVersion = /^[a-f0-9]{64}$/;
@@ -175,7 +178,7 @@ export async function continuationContext(run: string, fetcher: ContinuationFetc
   requireRun(run);
   const { status, value } = await request(`/runs/${encodeURIComponent(run)}/continuation/request-context`, undefined, fetcher);
   if (status !== 200 || value?.protocol !== "failed-run-continuation-action-context-v1" || value.run_id !== run ||
-    value.engine !== NATIVE_CONTINUATION_ENGINE || !shortString(value.status) || !assessments.includes(value.assessment) ||
+    !supportsContinuation(value.engine) || !shortString(value.status) || !assessments.includes(value.assessment) ||
     !shortString(value.reason) || !dateValue(value.observed_at) ||
     (value.assessment === "same_run_candidate" && (value.status !== "failed" || typeof value.failure_version !== "string" || !failureVersion.test(value.failure_version))))
     throw new Error("无法核验当前任务的续跑条件，没有发送请求。");

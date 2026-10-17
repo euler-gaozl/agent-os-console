@@ -13,7 +13,7 @@ import (
 
 func TestResourceSaveRequiresRegistryModelSupport(t *testing.T) {
 	service, user := strings.Repeat("s", 32), strings.Repeat("u", 32)
-	body := `{"kind":"agent","spec":{"model":{"limits":{}}}}`
+	body := `{"kind":"agent","spec":{"model":{"limits":{}},"final_output":{"protocol":"receipt-field-v1","tool":"mcp_review_check","input_field":"draft","ready_path":["structuredContent","ready"]}}}`
 	for _, tc := range []struct {
 		name, profile string
 		status, want  int
@@ -23,7 +23,9 @@ func TestResourceSaveRequiresRegistryModelSupport(t *testing.T) {
 		{"malformed", "{", 200, 503},
 		{"wrong version", `{"format":2,"provides":"agent-model-native-v1"}`, 200, 503},
 		{"missing capability", `{"format":1}`, 200, 503},
-		{"supported", `{"format":1,"provides":"agent-model-native-v1"}`, 200, 201},
+		{"native only", `{"format":1,"provides":"agent-model-native-v1"}`, 200, 503},
+		{"unknown final protocol", `{"format":1,"provides":"agent-model-native-v1","final_output":"future-v2"}`, 200, 503},
+		{"supported", `{"format":1,"provides":"agent-model-native-v1","final_output":"receipt-field-v1"}`, 200, 201},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			probes, writes := 0, 0
@@ -47,6 +49,11 @@ func TestResourceSaveRequiresRegistryModelSupport(t *testing.T) {
 					}
 					w.WriteHeader(http.StatusCreated)
 					_, _ = io.WriteString(w, `{"revision":2}`)
+				case "/v1/resources/agent/fixture/2":
+					if r.Method != http.MethodGet {
+						t.Error("version read must be read-only")
+					}
+					_, _ = io.WriteString(w, body)
 				default:
 					t.Error("unexpected upstream route", r.URL.Path)
 				}
@@ -71,6 +78,15 @@ func TestResourceSaveRequiresRegistryModelSupport(t *testing.T) {
 				}
 				if (tc.want == 201 && writes != 1) || (tc.want != 201 && writes != 0) {
 					t.Fatal("unsupported Registry received a save", writes)
+				}
+				if tc.want == 201 {
+					read := httptest.NewRequest(http.MethodGet, "/api/resources/agent/fixture/2", nil)
+					read.Header.Set("Authorization", "Bearer "+user)
+					reply := httptest.NewRecorder()
+					h.ServeHTTP(reply, read)
+					if reply.Code != 200 || reply.Body.String() != body || writes != 1 {
+						t.Fatal("saved final policy changed during version readback")
+					}
 				}
 			}
 		})
