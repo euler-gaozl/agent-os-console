@@ -86,4 +86,4 @@ Actions 日常保持关闭，最终统一 CI 尚待平台验收阶段执行。[�
 
 发布契约要求 Runtime 提供 `failed-run-continuation-v1`，Windows 发布器会验证绑定的 Runtime 和 Worker 组合。顺序为全部 Worker 守卫 → Owner 迁移 → Runtime → 匹配 Console BFF/Web。回滚 Console 不会删除接续请求或回执；已有回执时仍必须保留能够查询历史决定的 Runtime。此元数据增量不替代实际 Windows 安装与浏览器验收。
 
-2026-10-17 guarded-v7：运行详情显式支持 guarded-v7 的接续、工作状态和归档入口，并保留 guarded-v6 历史归档只读展示；发布能力声明 guarded_transport=guarded-v7，部署器用它阻止不兼容 Console 回滚。v6 失败任务不再提供接续动作，因为新 Worker 只打包 v7。定向 Web 测试、TypeScript 检查及 Console/启动 Go 测试需在安装前通过。
+2026-10-17 guarded-v7：运行详情显式支持 guarded-v7 的接续、工作状态和归档入口，并保留 guarded-v6 历史归档与接续；发布能力声明 guarded_transport=guarded-v7，部署器用它阻止不兼容 Console 回滚。v6 接续依赖双产物 Worker 的 v6 runner。定向 Web 测试、TypeScript 检查及 Console/启动 Go 测试需在安装前通过。
