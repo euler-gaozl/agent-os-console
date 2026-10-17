@@ -1,7 +1,8 @@
 export const NATIVE_CONTINUATION_ENGINE = "dsh-source-639ed015-native-v4";
 export const FINAL_CONTINUATION_ENGINE = "dsh-source-639ed015-final-v5";
+export const GUARDED_CONTINUATION_ENGINE = "dsh-source-639ed015-guarded-v6";
 export const supportsContinuation = (engine: string) =>
-  engine === NATIVE_CONTINUATION_ENGINE || engine === FINAL_CONTINUATION_ENGINE;
+  engine === NATIVE_CONTINUATION_ENGINE || engine === FINAL_CONTINUATION_ENGINE || engine === GUARDED_CONTINUATION_ENGINE;
 const pendingPrefix = "agentos-continuation-pending:v1:";
 const requestID = /^[A-Za-z0-9_-]{1,128}$/;
 const failureVersion = /^[a-f0-9]{64}$/;

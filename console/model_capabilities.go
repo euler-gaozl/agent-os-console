@@ -9,7 +9,7 @@ import (
 )
 
 func ModelManagementProfile() map[string]any {
-	return map[string]any{"format": 1, "requires": "agent-model-native-v1", "requires_final_output": "receipt-field-v1"}
+	return map[string]any{"format": 1, "requires": "agent-model-native-v1", "requires_final_output": "receipt-field-v1", "guarded_transport": "guarded-v6"}
 }
 
 // Old Registry versions may silently drop unknown limits fields on save. Refuse

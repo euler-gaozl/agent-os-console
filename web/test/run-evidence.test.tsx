@@ -10,9 +10,10 @@ const sourceEngines = [
   "dsh-source-639ed015-budget-v3",
   "dsh-source-639ed015-native-v4",
   "dsh-source-639ed015-final-v5",
+  "dsh-source-639ed015-guarded-v6",
 ];
 
-test("all five fixed source engines render the real working-state and archive surfaces", () => {
+test("all six fixed source engines render the real working-state and archive surfaces", () => {
   for (const engine of sourceEngines) {
     const html = renderToStaticMarkup(
       <RunEvidenceDetails id="run-one" engine={engine} status="failed" refreshRun={async () => {}} />,
