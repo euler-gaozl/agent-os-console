@@ -72,3 +72,6 @@ Actions 日常保持关闭，最终统一 CI 尚待平台验收阶段执行。[�
 此功能要求 Runtime 的 `failed-run-continuation-action-context-v1` 与 `failed-run-continuation-receipt-v1`，以及已升级规则守卫的全部领取 Worker。顺序为 Worker 守卫 → Runtime Owner 迁移和 Runtime HTTP → 匹配的 Console BFF/Web；回滚 Console 后再回滚 Runtime，保留新增的历史回执表。旧 Runtime 的 404 会明确显示不可用，不会自动回退旧 `/resume`。本次仅完成源码与构建，尚未安装新 Runtime/Console。
 
 本轮实际检查：Go `-race ./...`、vet、独立 Go 构建、36 项 Web 测试（新增 9 项，零跳过）、TypeScript 与 Vite 构建通过。新增检查覆盖实际客户端写入前置、丢回复重试、回执绑定、传输异常、独立恢复键、父选择版本回调及初始 SSR；并验证 BFF 请求容量、上游响应容量/不可用、转义路径与查询参数边界。静态独审已修正空查询串保真及父选择竞态。MemoryStorage 与 SSR 不代表已运行真实 hook 点击/卸载、跨标签页或浏览器验收；这些联合交互、真实供应商及业务验收仍待完成。
+## Windows 接续发布兼容（2026-10-17）
+
+发布契约要求 Runtime 提供 `failed-run-continuation-v1`，Windows 发布器会验证绑定的 Runtime 和 Worker 组合。顺序为全部 Worker 守卫 → Owner 迁移 → Runtime → 匹配 Console BFF/Web。回滚 Console 不会删除接续请求或回执；已有回执时仍必须保留能够查询历史决定的 Runtime。此元数据增量不替代实际 Windows 安装与浏览器验收。

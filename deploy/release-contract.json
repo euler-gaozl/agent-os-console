@@ -2,6 +2,7 @@
   "format": 1,
   "model_management": {"format": 1, "requires": "agent-model-native-v1"},
   "role": "control",
+  "continuation_management": {"format": 1, "requires": "failed-run-continuation-v1"},
   "schema": "none",
   "migration_owner": "none",
   "backward_compatible": true,
