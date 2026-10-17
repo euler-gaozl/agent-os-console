@@ -2558,6 +2558,15 @@ function Runs({ runs, notify }: { runs: any[]; notify: (m: string) => void }) {
               </Answer>
             </article>
             <div className="button-row">
+              {selected.parent_id && (
+                <button
+                  className="button"
+                  title={`源任务 ${selected.parent_id}`}
+                  onClick={() => void open(selected.parent_id)}
+                >
+                  查看源任务 {selected.parent_id.slice(0, 12)}
+                </button>
+              )}
               <RunArchiveButton
                 id={selected.id}
                 engine={selected.engine}
