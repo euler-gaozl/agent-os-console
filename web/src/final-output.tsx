@@ -32,7 +32,7 @@ export async function boundFinalTools(refs: Ref[], read: (r: Resource) => Promis
     if (r.summary || r.kind !== "connector" || r.id !== refs[i].id || r.revision !== refs[i].revision ||
         typeof r.spec?.name !== "string" || !Array.isArray(r.spec.tools)) throw new Error("绑定的 MCP 版本或工具列表无效。");
     return r.spec.tools.map((tool: { name: string }) => ({
-      name: `mcp_${r.spec.name}_${tool.name}`,
+      name: `mcp_${r.id}_${tool.name}`,
       label: `${r.spec.name} / ${tool.name} · v${r.revision}`,
     })).filter((option: ToolOption) => namePattern.test(option.name));
   });

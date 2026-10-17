@@ -28,14 +28,15 @@ test("invalid policies cannot be silently repaired before saving", () => {
   }
 });
 test("bound tools use exact immutable connector identity and never a catalog summary", async () => {
-  const refs = [{ id: "review/id", revision: 3 }, { id: "another", revision: 7 }];
+  const refs = [{ id: "review-id", revision: 3 }, { id: "another", revision: 7 }];
   const reads: any[] = [];
   const result = await boundFinalTools(refs, async ref => {
     reads.push(ref);
-    return { ...ref, summary: false, spec: { name: ref.id === "review/id" ? "review" : "second", tools: [{ name: "check" }] } };
+    return { ...ref, summary: false, spec: { name: ref.id === "review-id" ? "研究草稿字段与比较检查" : "另一个显示名", tools: [{ name: "check" }] } };
   });
-  assert.deepEqual(reads.map(r => [r.kind, r.id, r.revision, r.summary]), [["connector", "review/id", 3, true], ["connector", "another", 7, true]]);
-  assert.deepEqual(result.map(t => t.name), ["mcp_review_check", "mcp_second_check"]);
+  assert.deepEqual(reads.map(r => [r.kind, r.id, r.revision, r.summary]), [["connector", "review-id", 3, true], ["connector", "another", 7, true]]);
+  assert.deepEqual(result.map(t => t.name), ["mcp_review-id_check", "mcp_another_check"]);
+  assert.match(result[0].label, /研究草稿字段与比较检查/);
   for (const bad of [{ summary: true }, { id: "other" }, { revision: 4 }, { kind: "agent" }, { spec: { name: "review" } }]) {
     await assert.rejects(boundFinalTools([refs[0]], async ref => ({ ...ref, summary: false, spec: { name: "review", tools: [] }, ...bad })));
   }
