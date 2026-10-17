@@ -14,13 +14,15 @@ export const RESIDENT_ENGINE = "dsh-source-639ed015-resident-v2";
 export const BUDGET_ENGINE = "dsh-source-639ed015-budget-v3";
 export const NATIVE_ENGINE = "dsh-source-639ed015-native-v4";
 export const FINAL_ENGINE = "dsh-source-639ed015-final-v5";
-export const GUARDED_ENGINE = "dsh-source-639ed015-guarded-v6";
+export const GUARDED_ENGINE = "dsh-source-639ed015-guarded-v7";
+export const GUARDED_V6_ENGINE = "dsh-source-639ed015-guarded-v6";
 export const isSourceEngine = (engine: string) =>
   engine === SOURCE_ENGINE ||
   engine === RESIDENT_ENGINE ||
   engine === BUDGET_ENGINE ||
   engine === NATIVE_ENGINE ||
-  engine === FINAL_ENGINE || engine === GUARDED_ENGINE;
+  engine === FINAL_ENGINE || engine === GUARDED_ENGINE ||
+  engine === GUARDED_V6_ENGINE;
 export const hasArchiveManifest = (engine: string) =>
   isSourceEngine(engine) || engine === "dsh-0.2.0-rc.2-evidence-v1";
 

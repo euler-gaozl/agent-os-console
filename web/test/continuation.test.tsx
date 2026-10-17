@@ -137,9 +137,10 @@ test("context and receipt reads are GET only and bind the exact task and failure
   const finalContext = { ...context, engine: "dsh-source-639ed015-final-v5" };
   assert.deepEqual(await continuationContext("task/a", async () => reply(finalContext, 200)), finalContext);
   assert.equal(supportsContinuation(finalContext.engine), true);
-  const guarded = { ...context, engine: "dsh-source-639ed015-guarded-v6" };
+  const guarded = { ...context, engine: "dsh-source-639ed015-guarded-v7" };
   assert.deepEqual(await continuationContext("task/a", async () => reply(guarded, 200)), guarded);
   assert.equal(supportsContinuation(guarded.engine), true);
+  assert.equal(supportsContinuation("dsh-source-639ed015-guarded-v6"), false);
   for (const changed of [{ run_id: "other" }, { status: "completed" }, { failure_version: 123 }, { engine: "legacy" }, { engine: "dsh-source-639ed015-final-v6" }])
     await assert.rejects(continuationContext("task/a", async () => reply({ ...context, ...changed }, 200)));
   const storage = new MemoryStorage(), pending = create(storage);
